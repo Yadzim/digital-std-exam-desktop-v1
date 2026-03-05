@@ -11,7 +11,12 @@
     "start": "electron .",
     "preview": "vite preview"
   },
-  "keywords": ["exam", "tsul", "electron", "proctoring"],
+  "keywords": [
+    "exam",
+    "tsul",
+    "electron",
+    "proctoring"
+  ],
   "author": "",
   "license": "UNLICENSED",
   "devDependencies": {
@@ -77,7 +82,9 @@
     },
     "protocols": {
       "name": "ExamCore Guard Protocol",
-      "schemes": ["examcoreguard"]
+      "schemes": [
+        "examcoreguard"
+      ]
     }
   }
 }

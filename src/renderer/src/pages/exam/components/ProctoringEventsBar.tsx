@@ -1,49 +1,76 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tooltip } from 'antd';
-import { UsergroupDeleteOutlined, UserDeleteOutlined, AimOutlined, SwapOutlined } from '@ant-design/icons';
+import { Tooltip, Progress } from 'antd';
+import { LuUsersRound, LuUserX, LuCrosshair, LuArrowLeftRight, LuCode } from 'react-icons/lu';
 
 type EventCounts = {
     multi_face_detected: number;
     no_face_detected: number;
     tab_switch: number;
-    vm_detected: number;
-    debugger_attached: number;
-    multi_display: number;
-    proxy_detected: number;
-    tunnel_detected: number;
     head_movement: number;
+    devtools_detected: number;
 };
 
 const INITIAL_COUNTS: EventCounts = {
     multi_face_detected: 0,
     no_face_detected: 0,
     tab_switch: 0,
-    vm_detected: 0,
-    debugger_attached: 0,
-    multi_display: 0,
-    proxy_detected: 0,
-    tunnel_detected: 0,
     head_movement: 0,
+    devtools_detected: 0,
 };
 
 const EVENT_LABELS: Record<keyof EventCounts, string> = {
-    multi_face_detected: "Ko'p yuz",
-    no_face_detected: "Yuz yo'q",
-    tab_switch: "Oyna almashtirish",
-    vm_detected: "VM aniqlandi",
-    devtools_detected: "DevTools",
-    debugger_attached: "Debugger",
-    multi_display: "Ko'p monitor",
-    proxy_detected: "Proxy",
-    tunnel_detected: "Tunnel",
+    multi_face_detected: "Bir necha yuz",
+    no_face_detected: "Yuz aniqlanmadi",
+    tab_switch: "Boshqa oynaga o'tish",
+    devtools_detected: "Buzishga urinish",
     head_movement: "Bosh harakati",
+};
+
+const EVENT_WEIGHTS: Record<keyof EventCounts, { maxCount: number; weight: number }> = {
+    // 10 marta -> 20%
+    multi_face_detected: { maxCount: 10, weight: 20 },
+    // 10 marta -> 20%
+    no_face_detected: { maxCount: 10, weight: 20 },
+    // 10 marta -> 20%
+    tab_switch: { maxCount: 10, weight: 20 },
+    // 10 marta -> 20%
+    head_movement: { maxCount: 10, weight: 20 },
+    // 2 marta -> 20%
+    devtools_detected: { maxCount: 2, weight: 20 },
 };
 
 const ProctoringEventsBar: React.FC = () => {
     const { t } = useTranslation();
     const [counts, setCounts] = useState<EventCounts>({ ...INITIAL_COUNTS });
-    const [isElectron, setIsElectron] = useState(false);
+
+    const { integrityPercent, gradeLabel, gradeColor } = useMemo(() => {
+        let penalty = 0;
+        (Object.keys(EVENT_WEIGHTS) as (keyof EventCounts)[]).forEach((key) => {
+            const { maxCount, weight } = EVENT_WEIGHTS[key];
+            const count = counts[key];
+            if (!maxCount || !weight || !count) return;
+            const ratio = Math.min(count / maxCount, 1);
+            penalty += ratio * weight;
+        });
+        const rawPercent = 100 - Math.min(penalty, 100);
+        const integrity = Math.max(0, Math.round(rawPercent));
+
+        let label = "2 qoniqarsiz";
+        let color = "#cf1322";
+        if (integrity >= 86) {
+            label = "5 a'lo";
+            color = "#389e0d";
+        } else if (integrity >= 71) {
+            label = "4 yaxshi";
+            color = "#52c41a";
+        } else if (integrity >= 56) {
+            label = "3 qoniqarli";
+            color = "#faad14";
+        }
+
+        return { integrityPercent: integrity, gradeLabel: label, gradeColor: color };
+    }, [counts]);
 
     const handleSecurityEvent = useCallback((payload: { type?: string }) => {
         const type = payload?.type;
@@ -57,20 +84,6 @@ const ProctoringEventsBar: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        try {
-            const w = window as unknown as { electron?: { isElectron?: boolean }; require?: (id: string) => unknown };
-            if (w.electron?.isElectron) {
-                setIsElectron(true);
-                return;
-            }
-            if (typeof w.require === 'function') {
-                w.require('electron');
-                setIsElectron(true);
-            }
-        } catch (_) {}
-    }, []);
-
-    useEffect(() => {
         const onEvent = (a: unknown, b?: unknown) => {
             const payload = (b !== undefined ? b : a) as { type?: string };
             handleSecurityEvent(payload);
@@ -78,8 +91,8 @@ const ProctoringEventsBar: React.FC = () => {
         let unsubscribe: (() => void) | undefined;
         try {
             const w = window as unknown as {
-                electron?: { onSecurityEvent?: (cb: (p: unknown) => void) => () => void };
-                require?: (id: string) => { ipcRenderer: { on: (ch: string, fn: (e: unknown, p?: unknown) => void) => void; removeListener: (ch: string, fn: (e: unknown, p?: unknown) => void) => void } };
+                electron?: { onSecurityEvent?: (cb: (p: { type?: string }) => void) => () => void };
+                require?: (id: string) => { ipcRenderer: { on: (ch: string, fn: (e: unknown, p?: { type?: string }) => void) => void; removeListener: (ch: string, fn: (e: unknown, p?: { type?: string }) => void) => void } };
             };
             if (w.electron?.onSecurityEvent) {
                 unsubscribe = w.electron.onSecurityEvent((p) => handleSecurityEvent(p));
@@ -90,113 +103,127 @@ const ProctoringEventsBar: React.FC = () => {
                     unsubscribe = () => ipc.removeListener('security-event', onEvent);
                 }
             }
-        } catch (_) {}
+        } catch (_) { }
         return () => unsubscribe?.();
     }, [handleSecurityEvent]);
 
-    const hasEvents = ['multi_face_detected', 'no_face_detected', 'head_movement', 'tab_switch']
-        .some((key) => counts[key as keyof EventCounts] > 0);
-
-    if (!isElectron) return null;
-
     return (
-        <div className="proctoring-events-bar mt-3">
-            <p style={{ fontSize: '12px', marginBottom: '8px', fontWeight: 600, color: '#666' }} className="text-uppercase">
-                {t("Yahlitlik ko'rsatkichi")}
-            </p>
-            {hasEvents ? (
-                <div
-                    className="d-flex align-items-center"
-                    style={{ gap: 8, flexWrap: 'wrap' }}
-                >
-                    {counts.multi_face_detected > 0 && (
-                        <Tooltip title={EVENT_LABELS.multi_face_detected}>
-                            <span
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    padding: '4px 8px',
-                                    borderRadius: 6,
-                                    fontSize: 11,
-                                    background: '#fff2e8',
-                                    border: '1px solid #ffbb96',
-                                    color: '#d4380d',
-                                }}
-                            >
-                                <UsergroupDeleteOutlined />
-                                <span>{EVENT_LABELS.multi_face_detected}</span>
-                                <strong>{counts.multi_face_detected}</strong>
-                            </span>
-                        </Tooltip>
-                    )}
-                    {counts.no_face_detected > 0 && (
-                        <Tooltip title={EVENT_LABELS.no_face_detected}>
-                            <span
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    padding: '4px 8px',
-                                    borderRadius: 6,
-                                    fontSize: 11,
-                                    background: '#fff2e8',
-                                    border: '1px solid #ffbb96',
-                                    color: '#d4380d',
-                                }}
-                            >
-                                <UserDeleteOutlined />
-                                <span>{EVENT_LABELS.no_face_detected}</span>
-                                <strong>{counts.no_face_detected}</strong>
-                            </span>
-                        </Tooltip>
-                    )}
-                    {counts.head_movement > 0 && (
-                        <Tooltip title={EVENT_LABELS.head_movement}>
-                            <span
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    padding: '4px 8px',
-                                    borderRadius: 6,
-                                    fontSize: 11,
-                                    background: '#fff2e8',
-                                    border: '1px solid #ffbb96',
-                                    color: '#d4380d',
-                                }}
-                            >
-                                <AimOutlined />
-                                <span>{EVENT_LABELS.head_movement}</span>
-                                <strong>{counts.head_movement}</strong>
-                            </span>
-                        </Tooltip>
-                    )}
-                    {counts.tab_switch > 0 && (
-                        <Tooltip title={EVENT_LABELS.tab_switch}>
-                            <span
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    padding: '4px 8px',
-                                    borderRadius: 6,
-                                    fontSize: 11,
-                                    background: '#fff2e8',
-                                    border: '1px solid #ffbb96',
-                                    color: '#d4380d',
-                                }}
-                            >
-                                <SwapOutlined />
-                                <span>{EVENT_LABELS.tab_switch}</span>
-                                <strong>{counts.tab_switch}</strong>
-                            </span>
-                        </Tooltip>
-                    )}
+        <div className="d-flex flex-column align-items-center">
+            <div
+                className="d-flex align-items-center"
+                style={{ gap: 12, marginBottom: 8 }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Progress
+                    className='p-0 m-0'
+                        type="circle"
+                        percent={integrityPercent}
+                        width={46}
+                        strokeColor={gradeColor}
+                        status={integrityPercent < 56 ? 'exception' : integrityPercent < 86 ? 'active' : 'normal'}
+                    />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: 14, color: '#000', fontWeight: 600, }}>{t("Yahlitlik indikatori")}</span>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: gradeColor }}>
+                            · {gradeLabel}
+                        </span>
+                    </div>
                 </div>
-            ) : (
-                <span style={{ fontSize: '11px', color: '#8c8c8c' }}>— {t("Hozircha buzilishlar yo‘q")}</span>
-            )}
+            </div>
+
+            <div
+                className="d-flex align-items-center"
+                style={{ gap: 8, flexWrap: 'wrap', paddingLeft: 10, paddingRight: 10 }}
+            >
+
+                <Tooltip title={EVENT_LABELS.multi_face_detected}>
+                    <span
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            fontSize: 13,
+                            color: '#1C4C73',
+                            fontWeight: 500,
+                        }}
+                    >
+                        <LuUsersRound size={14} />
+                        <span>{EVENT_LABELS.multi_face_detected}</span>
+                        <strong>{counts.multi_face_detected}</strong>
+                    </span>
+                </Tooltip>
+
+
+                <Tooltip title={EVENT_LABELS.no_face_detected}>
+                    <span
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            fontSize: 13,
+                            color: '#1C4C73',
+                            fontWeight: 500,
+                        }}
+                    >
+                        <LuUserX size={14} />
+                        <span>{EVENT_LABELS.no_face_detected}</span>
+                        <strong>{counts.no_face_detected}</strong>
+                    </span>
+                </Tooltip>
+
+
+                <Tooltip title={EVENT_LABELS.head_movement}>
+                    <span
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            fontSize: 13,
+                            color: '#1C4C73',
+                            fontWeight: 500,
+                        }}
+                    >
+                        <LuCrosshair size={14} />
+                        <span>{EVENT_LABELS.head_movement}</span>
+                        <strong>{counts.head_movement}</strong>
+                    </span>
+                </Tooltip>
+
+
+                <Tooltip title={EVENT_LABELS.tab_switch}>
+                    <span
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            fontSize: 13,
+                            color: '#1C4C73',
+                            fontWeight: 500,
+                        }}
+                    >
+                        <LuArrowLeftRight size={14} />
+                        <span>{EVENT_LABELS.tab_switch}</span>
+                        <strong>{counts.tab_switch}</strong>
+                    </span>
+                </Tooltip>
+
+                <Tooltip title={EVENT_LABELS.devtools_detected}>
+                    <span
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            fontSize: 13,
+                            color: '#1C4C73',
+                            fontWeight: 500,
+                        }}
+                    >
+                        <LuCode size={14} />
+                        <span>{EVENT_LABELS.devtools_detected}</span>
+                        <strong>{counts.devtools_detected}</strong>
+                    </span>
+                </Tooltip>
+            </div>
         </div>
     );
 };

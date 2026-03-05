@@ -9,8 +9,8 @@ import { EXAM_ACTIONS } from "store/exam";
 import { useTranslation } from "react-i18next";
 import StudentAvatarCard from "components/structure/components/Avatar";
 import { NavLink } from 'react-router-dom';
-import ProctoringEventsBar from "./ProctoringEventsBar";
 import ExamFaceProctoring from "./ExamFaceProctoring";
+import ProctoringEventsBar from './ProctoringEventsBar';
 
 type PropsTypeExamRightbar = {
     exam_question: IExamQuestion | null,
@@ -59,7 +59,7 @@ const ExamRightbar = ({ exam_question, time, fontSize, setOpenModal, onSubmit, i
                 style={{ position: 'fixed', top: '60px', zIndex: 1 }}
             >
                 <StudentAvatarCard isMobile={false} />
-                <div className="warning_exam_pass">
+                {/* <div className="warning_exam_pass">
                     <strong><FaExclamationTriangle size={14} className="mb-1" />&nbsp;&nbsp;{t("E'tibor qarating")}!</strong><br />
                     <span>
                         {
@@ -68,13 +68,14 @@ const ExamRightbar = ({ exam_question, time, fontSize, setOpenModal, onSubmit, i
                                 "Обращайтесь о проблемах, связанных с экзаменом, не выходя из экзаменационной аудитории. После завершения экзамена проверьте свои ответы."
                         }
                     </span>
+                </div> */}
+                <div style={{ background: '#F6FBFF', padding: '10px', borderRadius: '10px' }}>
+                    <ProctoringEventsBar />
                 </div>
                 <div className="exam_pass_info">
                     <p style={{ fontSize: "13px" }} className="text-uppercase">{t("Imtihon haqida ma'lumot")}</p>
                     <div className="date_box_exam_pass">
                         <span>{t("Fan")}: </span><b>{data?.subject?.name}</b><br />
-                        {/* <span>{t("Savol turi")}: </span><b>{exam_question?.question_type}</b><br />
-                        <span>{t("Savollar soni")}: </span><b>{Object.keys(JSON.parse(exam_question?.exam?.question_count_by_type_with_ball ?? "{}")).length}</b><br /> */}
                         <span>{t("Maksimal ball")}: </span><b>{exam_question?.max_ball}</b><br />
                         <span>{t("Boshlash vaqti")}: </span><b>{moment(time?.start).format("DD-MM-YYYY HH:mm:ss")}</b><br />
                         <span>{t("Tugash vaqti")}: </span><b>{moment(time?.finish).format("DD-MM-YYYY HH:mm:ss")}</b><br />
@@ -92,7 +93,6 @@ const ExamRightbar = ({ exam_question, time, fontSize, setOpenModal, onSubmit, i
                     <CButton
                         className="w-50 me-2"
                         onClick={() => onSubmit(false)}
-                        // disabled={isSubmited}
                         loading={isSubmited}
                     >Saqlash</CButton>
                     <CButton
