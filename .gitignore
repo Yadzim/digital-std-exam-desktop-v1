@@ -85,3 +85,4 @@ assets/screenshots
 .vscode
 .idea
 *.exe
+release
