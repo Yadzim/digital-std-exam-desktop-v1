@@ -106,7 +106,6 @@ const ExamRightbar = ({ exam_question, time, fontSize, setOpenModal, onSubmit, i
                     <CButton className='w-100' >Saqlangan javoblar</CButton>
                 </NavLink>
                 <ExamFaceProctoring />
-                <ProctoringEventsBar />
             </Drawer>
         </div>
     )

@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
+import { UsergroupDeleteOutlined, UserDeleteOutlined, AimOutlined, SwapOutlined } from '@ant-design/icons';
 
 type EventCounts = {
     multi_face_detected: number;
     no_face_detected: number;
-    forbidden_process: number;
     tab_switch: number;
     vm_detected: number;
-    devtools_detected: number;
     debugger_attached: number;
     multi_display: number;
     proxy_detected: number;
@@ -19,10 +18,8 @@ type EventCounts = {
 const INITIAL_COUNTS: EventCounts = {
     multi_face_detected: 0,
     no_face_detected: 0,
-    forbidden_process: 0,
     tab_switch: 0,
     vm_detected: 0,
-    devtools_detected: 0,
     debugger_attached: 0,
     multi_display: 0,
     proxy_detected: 0,
@@ -33,7 +30,6 @@ const INITIAL_COUNTS: EventCounts = {
 const EVENT_LABELS: Record<keyof EventCounts, string> = {
     multi_face_detected: "Ko'p yuz",
     no_face_detected: "Yuz yo'q",
-    forbidden_process: "Taqiqlangan dastur",
     tab_switch: "Oyna almashtirish",
     vm_detected: "VM aniqlandi",
     devtools_detected: "DevTools",
@@ -98,39 +94,105 @@ const ProctoringEventsBar: React.FC = () => {
         return () => unsubscribe?.();
     }, [handleSecurityEvent]);
 
-    const hasEvents = Object.values(counts).some((c) => c > 0);
+    const hasEvents = ['multi_face_detected', 'no_face_detected', 'head_movement', 'tab_switch']
+        .some((key) => counts[key as keyof EventCounts] > 0);
 
     if (!isElectron) return null;
 
     return (
         <div className="proctoring-events-bar mt-3">
             <p style={{ fontSize: '12px', marginBottom: '8px', fontWeight: 600, color: '#666' }} className="text-uppercase">
-                {t("Proctoring")} / {t("Kuzatuv")}
+                {t("Yahlitlik ko'rsatkichi")}
             </p>
             {hasEvents ? (
-                <div className="d-flex flex-wrap gap-2">
-                    {(Object.keys(EVENT_LABELS) as Array<keyof EventCounts>).map((key) => {
-                        const count = counts[key];
-                        if (count === 0) return null;
-                        return (
-                            <Tooltip key={key} title={EVENT_LABELS[key]}>
-                                <span
-                                    className="proctoring-badge"
-                                    style={{
-                                        display: 'inline-block',
-                                        padding: '4px 8px',
-                                        borderRadius: '6px',
-                                        fontSize: '11px',
-                                        background: '#fff2e8',
-                                        border: '1px solid #ffbb96',
-                                        color: '#d4380d',
-                                    }}
-                                >
-                                    {EVENT_LABELS[key]}: <strong>{count}</strong>
-                                </span>
-                            </Tooltip>
-                        );
-                    })}
+                <div
+                    className="d-flex align-items-center"
+                    style={{ gap: 8, flexWrap: 'wrap' }}
+                >
+                    {counts.multi_face_detected > 0 && (
+                        <Tooltip title={EVENT_LABELS.multi_face_detected}>
+                            <span
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    padding: '4px 8px',
+                                    borderRadius: 6,
+                                    fontSize: 11,
+                                    background: '#fff2e8',
+                                    border: '1px solid #ffbb96',
+                                    color: '#d4380d',
+                                }}
+                            >
+                                <UsergroupDeleteOutlined />
+                                <span>{EVENT_LABELS.multi_face_detected}</span>
+                                <strong>{counts.multi_face_detected}</strong>
+                            </span>
+                        </Tooltip>
+                    )}
+                    {counts.no_face_detected > 0 && (
+                        <Tooltip title={EVENT_LABELS.no_face_detected}>
+                            <span
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    padding: '4px 8px',
+                                    borderRadius: 6,
+                                    fontSize: 11,
+                                    background: '#fff2e8',
+                                    border: '1px solid #ffbb96',
+                                    color: '#d4380d',
+                                }}
+                            >
+                                <UserDeleteOutlined />
+                                <span>{EVENT_LABELS.no_face_detected}</span>
+                                <strong>{counts.no_face_detected}</strong>
+                            </span>
+                        </Tooltip>
+                    )}
+                    {counts.head_movement > 0 && (
+                        <Tooltip title={EVENT_LABELS.head_movement}>
+                            <span
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    padding: '4px 8px',
+                                    borderRadius: 6,
+                                    fontSize: 11,
+                                    background: '#fff2e8',
+                                    border: '1px solid #ffbb96',
+                                    color: '#d4380d',
+                                }}
+                            >
+                                <AimOutlined />
+                                <span>{EVENT_LABELS.head_movement}</span>
+                                <strong>{counts.head_movement}</strong>
+                            </span>
+                        </Tooltip>
+                    )}
+                    {counts.tab_switch > 0 && (
+                        <Tooltip title={EVENT_LABELS.tab_switch}>
+                            <span
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    padding: '4px 8px',
+                                    borderRadius: 6,
+                                    fontSize: 11,
+                                    background: '#fff2e8',
+                                    border: '1px solid #ffbb96',
+                                    color: '#d4380d',
+                                }}
+                            >
+                                <SwapOutlined />
+                                <span>{EVENT_LABELS.tab_switch}</span>
+                                <strong>{counts.tab_switch}</strong>
+                            </span>
+                        </Tooltip>
+                    )}
                 </div>
             ) : (
                 <span style={{ fontSize: '11px', color: '#8c8c8c' }}>— {t("Hozircha buzilishlar yo‘q")}</span>

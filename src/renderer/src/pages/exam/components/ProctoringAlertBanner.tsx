@@ -1,40 +1,46 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Alert } from 'antd';
+import React, { useEffect, useCallback, useState } from 'react';
+import { notification } from 'antd';
 
 const VIOLATION_LABELS: Record<string, string> = {
   no_face_detected: "Yuz aniqlanmadi",
   head_movement: "Bosh harakati",
   multi_face_detected: "Ko'p yuz aniqlandi",
-  forbidden_process: "Taqiqlangan dastur ishlatilmoqda",
   tab_switch: "Oyna almashtirildi",
-  vm_detected: "Virtual mashina aniqlandi",
-  devtools_detected: "Developer vositalar ochiq",
-  multi_display: "Ko'p monitor aniqlandi",
-  proxy_detected: "Proxy aniqlandi",
-  tunnel_detected: "Tunnel aniqlandi",
 };
 
-const MESSAGE_INTRO = "Hurmatli talaba, siz quyidagi qoida buzilishlarni qilmoqdasiz:";
-
-type AlertItem = { type: string; label: string; key: number };
+const MESSAGE_INTRO = "Qoida buzilishi:";
 
 const ProctoringAlertBanner: React.FC = () => {
-  const [alerts, setAlerts] = useState<AlertItem[]>([]);
   const [isElectron, setIsElectron] = useState(false);
-  const keyRef = React.useRef(0);
 
   const handleSecurityEvent = useCallback((payload: { type?: string }) => {
     const type = payload?.type;
     if (!type) return;
+    if (type === 'devtools_detected' || type === 'screenshot') return;
     if (type === "security_cleared" || type === "face_ok") {
-      setAlerts([]);
+      notification.destroy();
       return;
     }
     const label = VIOLATION_LABELS[type] || type;
-    setAlerts((prev) => {
-      const next = [...prev, { type, label, key: keyRef.current++ }];
-      if (next.length > 3) return next.slice(-3);
-      return next;
+    const key = `proctoring-${Date.now()}`;
+    notification.open({
+      key,
+      message: 'Proctoring ogohlantirish',
+      description: (
+        <div className="text-secondary">
+          {MESSAGE_INTRO} <strong>{label}</strong>.
+          <br />
+          <div className="notification-progres" />
+        </div>
+      ),
+      type: 'warning',
+      style: {
+        backgroundColor: '#fffbeb',
+        position: 'relative',
+        borderRadius: '10px',
+      },
+      // Kamida 2 sekund, odatda ~4 sekund ko'rinib turadi
+      duration: 4,
     });
   }, []);
 
@@ -49,7 +55,7 @@ const ProctoringAlertBanner: React.FC = () => {
         w.require('electron');
         setIsElectron(true);
       }
-    } catch (_) {}
+    } catch (_) { }
   }, []);
 
   useEffect(() => {
@@ -72,44 +78,12 @@ const ProctoringAlertBanner: React.FC = () => {
           unsubscribe = () => ipc.removeListener('security-event', onEvent);
         }
       }
-    } catch (_) {}
+    } catch (_) { }
     return () => unsubscribe?.();
   }, [handleSecurityEvent]);
 
-  if (!isElectron || alerts.length === 0) return null;
-
-  return (
-    <div
-      className="proctoring-alert-banner"
-      style={{
-        marginBottom: 16,
-        padding: '12px 16px',
-        background: '#fff2e8',
-        borderBottom: '2px solid #ff7875',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-      }}
-    >
-      <Alert
-        message={
-          <span style={{ fontWeight: 600, fontSize: '14px' }}>
-            {MESSAGE_INTRO}
-          </span>
-        }
-        description={
-          <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
-            {alerts.map((a) => (
-              <li key={a.key} style={{ marginBottom: '4px' }}>
-                {a.label}
-              </li>
-            ))}
-          </ul>
-        }
-        type="warning"
-        showIcon
-        style={{ background: 'transparent', border: 'none', padding: 0 }}
-      />
-    </div>
-  );
+  if (!isElectron) return null;
+  return null;
 };
 
 export default ProctoringAlertBanner;

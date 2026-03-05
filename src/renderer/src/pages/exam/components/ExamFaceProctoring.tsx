@@ -79,8 +79,7 @@ const ExamFaceProctoring: React.FC = () => {
   if (!isElectron || !modelsLoaded) return null;
 
   return (
-    <div className="mt-3" style={{ width: '100%' }}>
-      <p style={{ fontSize: '11px', marginBottom: '4px', color: '#8c8c8c' }}>Kamera (proctoring)</p>
+    <div style={{ display: 'none' }}>
       <Webcam
         ref={webcamRef}
         audio={false}
@@ -88,7 +87,6 @@ const ExamFaceProctoring: React.FC = () => {
         height={480}
         screenshotFormat="image/jpeg"
         videoConstraints={{ facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }}
-        style={{ width: '100%', maxWidth: 320, borderRadius: 8, objectFit: 'cover' }}
       />
     </div>
   );

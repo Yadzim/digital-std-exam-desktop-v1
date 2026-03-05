@@ -9,6 +9,7 @@ import { useAppSelector } from "store/services";
 import { useTranslation } from "react-i18next";
 import { NavLink, useHistory } from "react-router-dom";
 import { StudentHeaderUi } from "./components/styled";
+import ProctoringEventsBar from "pages/exam/components/ProctoringEventsBar";
 import IconBtnCmponent from "./components/IconsBtnComponent";
 import LanguageBtn from "./components/Language";
 import "./components/styles.scss";
@@ -33,6 +34,9 @@ const StudentHeader: FC<{ isSetting: boolean, setIsSetting: (isSetting: boolean)
                     </NavLink> */}
                     <Button type="link" size="small" className="ms-3" onClick={() => history.push("/")} style={{ color: "#1890FF" }}>{t("ASOSIY SAHIFA")}</Button>
                     {/* <Button type="link" size="small" className="ms-3" onClick={()=> history.push("/webcam")} style={{color:"#1890FF"}}>{t("Auth")}</Button> */}
+                    <div className="mt-2" style={{ padding: "0 12px" }}>
+                        <ProctoringEventsBar />
+                    </div>
                 </div>
                 <div className="d-flex text-end">
                     {/* <IconBtnCmponent icon={ui.isOnline ? <BiWifi color={'#389e0d'} size={20} /> : <BiWifiOff color={'#f5222d'} size={20} />} isBadge={false} /> */}
