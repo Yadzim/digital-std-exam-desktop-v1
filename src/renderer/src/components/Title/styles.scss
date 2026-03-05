@@ -1,0 +1,24 @@
+// this style for different pages of content for example like this ( <- Page Name )
+.page-content-title {
+    display: flex;
+    align-items: center;
+    & > span {
+        font-size: 14px;
+        font-weight: 500;
+        margin-left: 16px;
+        display: block;
+        color:#5F6368;
+        text-transform: uppercase;
+        letter-spacing: 0.2px;
+    }
+
+    & > svg {
+        font-size: 14px;
+        cursor: pointer;
+        color: #595959;
+
+        &:hover {
+            color: #1990FF;
+        }
+    }
+}

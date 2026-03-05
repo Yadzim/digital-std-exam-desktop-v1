@@ -1,0 +1,83 @@
+{
+  "name": "digital-std-exam-desktop",
+  "version": "1.0.0",
+  "description": "TSUL Digital Exam Desktop - Birlashtirilgan imtihon ilovasi va anti-cheat",
+  "main": "src/main/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build:renderer": "vite build",
+    "build": "vite build && electron-builder --win --publish never",
+    "pack": "vite build && electron-builder --dir --win --publish never",
+    "start": "electron .",
+    "preview": "vite preview"
+  },
+  "keywords": ["exam", "tsul", "electron", "proctoring"],
+  "author": "",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
+    "electron": "^31.0.0",
+    "electron-builder": "^26.8.1",
+    "sass": "^1.69.5",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.7.1",
+    "@vladmandic/face-api": "^1.7.15",
+    "antd": "^4.16.6",
+    "axios": "^1.6.7",
+    "bootstrap": "^5.1.0",
+    "electron-squirrel-startup": "^1.0.1",
+    "html5-qrcode": "^2.3.8",
+    "i18next": "^20.4.0",
+    "moment": "^2.29.1",
+    "node-machine-id": "^1.1.12",
+    "ps-list": "^6.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^11.11.4",
+    "react-icons": "^5.2.1",
+    "react-qr-code": "^2.0.15",
+    "react-redux": "^7.2.4",
+    "react-router-dom": "^5.2.0",
+    "react-webcam": "^7.2.0",
+    "reactstrap": "^9.1.5",
+    "screenshot-desktop": "^1.15.3",
+    "styled-components": "^5.3.0",
+    "suneditor": "^2.41.3",
+    "suneditor-react": "^3.3.1",
+    "systeminformation": "^5.23.5",
+    "uuid": "^10.0.0"
+  },
+  "build": {
+    "appId": "com.digital-std.exam-desktop",
+    "productName": "Digital Std Exam",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "src/main/**/*",
+      "assets/**/*"
+    ],
+    "extraResources": [],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Digital Std Exam"
+    },
+    "protocols": {
+      "name": "ExamCore Guard Protocol",
+      "schemes": ["examcoreguard"]
+    }
+  }
+}

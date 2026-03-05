@@ -1,0 +1,169 @@
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9998;
+  overflow: hidden;
+}
+
+.confetti-item {
+  position: absolute;
+  font-size: 28px;
+  pointer-events: none;
+  will-change: transform, opacity;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  }
+}
+
+// Animation for confetti falling from top
+.confetti-fall-top {
+  animation: fallFromTop linear forwards;
+}
+
+@keyframes fallFromTop {
+  0% {
+    transform: translateY(-100px) translateX(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(calc(100vh + 100px)) translateX(var(--drift, 0px))
+      rotate(720deg) scale(0.3);
+    opacity: 0;
+  }
+}
+
+.birthday-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  text-align: center;
+  padding: 50px 40px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  min-width: 400px;
+  max-width: 600px;
+  animation: fadeInScale 0.8s ease-out, fadeOutSlow 2s ease-in 3s forwards;
+  pointer-events: none;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes fadeOutSlow {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+}
+
+.birthday-emoji-large {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  animation: bounce 1s ease-in-out infinite;
+
+  svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  }
+
+  svg:nth-child(1) {
+    color: #ff6b9d; // Pink
+  }
+
+  svg:nth-child(2) {
+    color: #4ecdc4; // Teal
+  }
+
+  svg:nth-child(3) {
+    color: #ffd93d; // Yellow
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.birthday-title {
+  font-size: 36px;
+  font-weight: bold;
+  margin: 0 0 15px 0;
+  background: linear-gradient(
+    135deg,
+    #ff6b9d 0%,
+    #4ecdc4 25%,
+    #ffd93d 50%,
+    #95e1d3 75%,
+    #f38181 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: pulse 2s ease-in-out infinite;
+  letter-spacing: 1px;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.birthday-name {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 10px 0;
+  color: #ff6b9d;
+  text-shadow: 0 2px 4px rgba(255, 107, 157, 0.2);
+}
+
+.birthday-age {
+  font-size: 20px;
+  margin: 15px 0;
+  color: #4ecdc4;
+  text-shadow: 0 2px 4px rgba(78, 205, 196, 0.2);
+}
+
+.birthday-emojis {
+  font-size: 28px;
+  margin-top: 20px;
+  letter-spacing: 8px;
+}

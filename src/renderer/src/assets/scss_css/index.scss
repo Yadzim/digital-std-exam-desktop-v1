@@ -1,0 +1,235 @@
+/** @format */
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f8f8fb;
+  font-family: Calibri, Roboto, Helvetica, Arial, sans-serif !important;
+}
+
+.c-card {
+  -webkit-box-shadow: 4px 4px 50px -19px rgba(34, 60, 80, 0.2);
+  -moz-box-shadow: 4px 4px 50px -19px rgba(34, 60, 80, 0.2);
+  box-shadow: 4px 4px 50px -19px rgba(34, 60, 80, 0.2);
+  border: none;
+  outline: none;
+  background-color: white;
+  border-radius: 12px;
+  padding: 1rem;
+}
+.c-card.parent {
+  border-radius: 16px;
+}
+
+.table-row-hover:hover {
+  background: rgba($color: #000000, $alpha: 0.1);
+  box-shadow: 0 5px 5px 0 rgba($color: #000000, $alpha: 0.1);
+}
+
+// link title style
+.fio_link {
+  text-decoration: none;
+  // color: #4B4E52;
+  // color: #000;
+  transition: 0.1s;
+  text-transform: uppercase;
+  // font-family: "Product Sans",Arial,sans-serif !important;
+  // font-size: 12px !important;
+  // font-weight: 450 !important;
+  cursor: pointer;
+  &:hover {
+    color: #0d83fb;
+    text-decoration: underline;
+  }
+}
+
+.pageContentTitleStudent {
+  display: flex;
+  align-items: center;
+  & > span {
+    font-size: 15px;
+    font-weight: 400;
+    margin-left: 8px;
+    display: block;
+  }
+
+  & > svg {
+    font-size: 22px;
+    cursor: pointer;
+    color: #595959;
+
+    &:hover {
+      color: #1890ff;
+    }
+  }
+}
+
+// this style for avatar on the table
+
+.custom_vatar_box {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+
+  & > img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+  }
+}
+
+.custom_user_img_detail {
+  width: 100%;
+  height: 400px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & > span {
+    vertical-align: middle;
+  }
+
+  & > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 786px) {
+  .ant-tooltip {
+    display: none !important;
+  }
+}
+
+.loader-line {
+  width: 100%;
+  height: 2px;
+  position: relative;
+  overflow: hidden;
+  background-color: #ddd;
+  margin: 0 auto;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  border-radius: 20px;
+}
+
+.loader-line:before {
+  content: "";
+  position: absolute;
+  left: -50%;
+  height: 3px;
+  width: 40%;
+  background-color: #096dd9;
+  -webkit-animation: lineAnim 1s linear infinite;
+  -moz-animation: lineAnim 1s linear infinite;
+  animation: lineAnim 1s linear infinite;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  border-radius: 20px;
+}
+
+@keyframes lineAnim {
+  0% {
+    left: -40%;
+  }
+  50% {
+    left: 20%;
+    width: 80%;
+  }
+  100% {
+    left: 100%;
+    width: 100%;
+  }
+}
+
+.goBackBtn {
+  font-size: 15px;
+  margin-right: 14px;
+  color: #595959;
+  cursor: pointer;
+  margin-bottom: 2px;
+  &:hover {
+    color: #096dd9;
+  }
+}
+
+// <-------======styles for Form =====---------->
+
+.form_ui_flex {
+  display: flex;
+  @media (max-width: 576px) {
+    display: block;
+  }
+}
+
+.form_ui_flex_form_item {
+  width: calc(100% - 150px);
+  @media (max-width: 576px) {
+    width: 100%;
+  }
+}
+.ant-modal-body {
+  .ant-upload {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+//  collapse style
+.site-collapse-custom-collapse {
+  background-color: #f7f9fb !important;
+  padding: 20px 10px 1px 10px;
+}
+
+.site-collapse-custom-collapse .site-collapse-custom-panel {
+  margin-bottom: 16px;
+  overflow: hidden;
+  background: white;
+  // border: 0px;
+  border-radius: 12px;
+  font-size: 14px;
+  box-shadow: rgba(214, 217, 226, 0.2) 0px 8px 30px 0;
+}
+
+.editor {
+  .sun-editor {
+    // border: none;
+    border-radius: 0.75rem;
+
+    .se-resizing-bar {
+      border-radius: 0 0 0.75rem 0.75rem;
+    }
+    .se-toolbar {
+      border-radius: 0.75rem 0.75rem 0 0;
+      outline: none;
+      border-bottom: 1px solid #eee;
+      // background-color: white;
+    }
+
+    .se-btn-module-border {
+      border: none;
+    }
+
+    .se-btn {
+      border-radius: 0.65rem;
+    }
+  }
+}
+
+.loader {
+  animation: loader_animate 1s ease-in-out infinite;
+}
+
+@keyframes loader_animate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

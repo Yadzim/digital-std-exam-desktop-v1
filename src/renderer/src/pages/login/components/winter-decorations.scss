@@ -1,0 +1,123 @@
+/* Snow Animation */
+.snow-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.snowflake {
+  position: absolute;
+  top: -20px;
+  color: white;
+  opacity: 0.8;
+  animation: snowfall linear infinite;
+  pointer-events: none;
+}
+
+@keyframes snowfall {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(20px) rotate(180deg);
+  }
+  100% {
+    transform: translateY(100vh) translateX(-20px) rotate(360deg);
+    opacity: 0.3;
+  }
+}
+
+/* Christmas Decorations */
+.christmas-decorations {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 500;
+}
+
+.decoration {
+  position: absolute;
+  color: #e8f0fe;
+  animation: float 4s ease-in-out infinite;
+  filter: drop-shadow(0 1px 44px rgba(0, 0, 0, 0.2));
+}
+
+.decoration-1 {
+  top: 10%;
+  left: 5%;
+  animation-delay: 0s;
+  font-size: 25px;
+}
+
+.decoration-2 {
+  top: 20%;
+  right: 8%;
+  animation-delay: 0.5s;
+  font-size: 30px;
+}
+
+.decoration-3 {
+  top: 15%;
+  left: 50%;
+  animation-delay: 1s;
+  font-size: 28px;
+}
+
+.decoration-4 {
+  top: 5%;
+  right: 15%;
+  animation-delay: 1.5s;
+  font-size: 35px;
+}
+
+.decoration-5 {
+  top: 25%;
+  left: 10%;
+  animation-delay: 2s;
+  font-size: 32px;
+}
+
+.decoration-6 {
+  top: 12%;
+  right: 5%;
+  animation-delay: 2.5s;
+  font-size: 24px;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(5deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-5deg);
+  }
+  75% {
+    transform: translateY(-15px) rotate(3deg);
+  }
+}
+
+/* Responsive adjustments for decorations */
+@media screen and (max-width: 1024px) {
+  .decoration {
+    font-size: 20px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .decoration {
+    font-size: 18px;
+  }
+}
